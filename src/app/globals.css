@@ -1,26 +1,171 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@plugin "../../hero.js";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+/* Focus indicators for accessibility (WCAG 2.1 compliant) */
+*:focus-visible {
+  outline: 2px solid hsl(187 100% 42%); /* Primary cyan */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid hsl(187 100% 42%);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ocean-themed gradient backgrounds */
+.ocean-gradient {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--heroui-background)) 0%,
+    hsl(207 90% 54% / 0.05) 50%,
+    hsl(var(--heroui-background)) 100%
+  );
+}
+
+.ocean-gradient-dark {
+  background: linear-gradient(
+    180deg,
+    hsl(210 100% 6%) 0%,
+    hsl(207 90% 18% / 0.3) 30%,
+    hsl(187 90% 42% / 0.1) 60%,
+    hsl(210 100% 6%) 100%
+  );
+}
+
+/* Glassmorphism effect */
+.glass-effect {
+  background: hsl(var(--heroui-background) / 0.6);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid hsl(var(--heroui-divider) / 0.1);
+}
+
+/* Wave animation keyframes */
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(0%) translateY(0%) rotate(0deg);
+  }
+  25% {
+    transform: translateX(5%) translateY(-5%) rotate(1deg);
+  }
+  50% {
+    transform: translateX(0%) translateY(-10%) rotate(0deg);
+  }
+  75% {
+    transform: translateX(-5%) translateY(-5%) rotate(-1deg);
+  }
+}
+
+.wave-animation {
+  animation: wave 8s ease-in-out infinite;
+}
+
+.wave-animation-slow {
+  animation: wave 12s ease-in-out infinite;
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(3deg);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--heroui-content1)) 0%,
+    hsl(var(--heroui-content2)) 50%,
+    hsl(var(--heroui-content1)) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Highlighted card with glowing border and pulse animation */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(187 100% 42% / 0.4), 
+                0 0 40px hsl(187 100% 42% / 0.2),
+                0 0 60px hsl(187 100% 42% / 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px hsl(187 100% 42% / 0.6), 
+                0 0 60px hsl(187 100% 42% / 0.4),
+                0 0 90px hsl(187 100% 42% / 0.2);
+  }
+}
+
+.highlighted-card {
+  animation: glow-pulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.highlighted-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    hsl(187 100% 42% / 0.6),
+    hsl(187 100% 62% / 0.4),
+    hsl(187 100% 42% / 0.6)
+  );
+  z-index: -1;
+  filter: blur(10px);
+  opacity: 0.7;
+  animation: glow-pulse 2s ease-in-out infinite;
 }

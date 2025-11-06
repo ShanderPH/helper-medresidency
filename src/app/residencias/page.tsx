@@ -57,10 +57,15 @@ export default function ResidenciasPage() {
         }
 
         // Cutoff range filter - get latest score (2025)
+        // IMPORTANTE: Só aplica filtro para programas com notas na escala Enare (700-1000)
         const latestScore = program.cutoff_scores.find(s => s.year === 2025)?.score;
         if (latestScore !== undefined) {
-          if (latestScore < cutoffRange[0] || latestScore > cutoffRange[1]) {
-            return false;
+          // Só filtra se a nota estiver na escala Enare (> 100)
+          // Programas com escalas diferentes (0-10 ou 0-100) sempre passam
+          if (latestScore > 100) {
+            if (latestScore < cutoffRange[0] || latestScore > cutoffRange[1]) {
+              return false;
+            }
           }
         }
 

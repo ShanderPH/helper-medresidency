@@ -116,6 +116,20 @@ export function Sidebar({
 
   return (
     <>
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsCollapsed(true)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Toggle Button - Fixed position */}
       <motion.div
         className="fixed top-24 left-0 z-60 lg:z-50"

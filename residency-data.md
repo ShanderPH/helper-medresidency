@@ -438,20 +438,6 @@ export const residencyProgramsData = [
     second_phase_date: 1765238400000 // 2025-12-09
   },
   {
-    instituicao: "Sírio-Libanês",
-    exame_acesso: "HSL",
-    uf: "São Paulo",
-    especialidade: "OTORRINOLARINGOLOGIA",
-    nota_corte_2025: null,
-    nota_corte_2024: null,
-    nota_corte_2023: null,
-    nota_corte_2022: null,
-    exam_price: 600,
-    last_exam_date: 1763769600000, // 2025-11-20
-    has_second_phase: false,
-    second_phase_date: null
-  },
-  {
     instituicao: "Faculdade de Medicina de Jundiai",
     exame_acesso: "FMJ",
     uf: "São Paulo",

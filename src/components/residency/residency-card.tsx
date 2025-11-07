@@ -214,22 +214,34 @@ export function ResidencyCard({ program, isHighlighted = false, isDisabled = fal
             </Chip>
           </div>
 
-          {/* Second Phase Badge */}
+          {/* Second Phase Badge with Date */}
           {program.has_second_phase && (
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
+              className="w-full"
             >
-              <Chip 
-                variant="flat" 
-                size="sm" 
-                color="warning" 
-                className="w-full"
-                startContent={<HiCheckCircle className="w-4 h-4" />}
-              >
-                Possui 2ª Fase
-              </Chip>
+              <div className="p-3 rounded-lg bg-warning/10 border border-warning/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <HiCheckCircle className="w-5 h-5 text-warning" />
+                  <span className="text-sm font-bold text-warning">
+                    Possui 2ª Fase
+                  </span>
+                </div>
+                {program.second_phase_date && (
+                  <div className="flex items-center gap-2 pl-7">
+                    <HiCalendar className="w-4 h-4 text-warning/70" />
+                    <span className="text-xs font-semibold text-foreground-600">
+                      {new Date(program.second_phase_date).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                      })}
+                    </span>
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
 

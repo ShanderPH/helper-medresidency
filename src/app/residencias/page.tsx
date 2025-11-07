@@ -5,6 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Sidebar } from "@/components/residency/sidebar";
 import { ResidencyCard } from "@/components/residency/residency-card";
+import { SearchBar } from "@/components/residency/search-bar";
+import { SortControls, type SortOption } from "@/components/residency/sort-controls";
 import { Spinner } from "@heroui/react";
 import { getAllResidencyPrograms, getStates } from "@/lib/supabase/queries";
 import type { ResidencyProgramWithRelations } from "@/lib/supabase/queries";
@@ -21,6 +23,8 @@ export default function ResidenciasPage() {
   const [selectedInstitution, setSelectedInstitution] = useState<string>("all");
   const [cutoffRange, setCutoffRange] = useState<[number, number]>([700, 950]);
   const [userScore, setUserScore] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortOption, setSortOption] = useState<SortOption>("score-desc");
 
   // Load data
   useEffect(() => {
@@ -46,6 +50,19 @@ export default function ResidenciasPage() {
   const filteredPrograms = useMemo(() => {
     return programs
       .filter((program) => {
+        // Search query filter
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          const matchesInstitution = program.institution.name.toLowerCase().includes(query);
+          const matchesState = program.institution.state?.name.toLowerCase().includes(query) || 
+                              program.institution.state?.code.toLowerCase().includes(query);
+          const matchesExamType = program.exam_type.name.toLowerCase().includes(query);
+          
+          if (!matchesInstitution && !matchesState && !matchesExamType) {
+            return false;
+          }
+        }
+
         // State filter
         if (selectedState !== "all" && program.institution.state?.code !== selectedState) {
           return false;
@@ -82,9 +99,29 @@ export default function ResidenciasPage() {
       .sort((a, b) => {
         const scoreA = a.cutoff_scores.find(s => s.year === 2025)?.score || 0;
         const scoreB = b.cutoff_scores.find(s => s.year === 2025)?.score || 0;
-        return scoreB - scoreA;
+        const nameA = a.institution.name;
+        const nameB = b.institution.name;
+        const stateA = a.institution.state?.name || "";
+        const stateB = b.institution.state?.name || "";
+
+        switch (sortOption) {
+          case "score-desc":
+            return scoreB - scoreA;
+          case "score-asc":
+            return scoreA - scoreB;
+          case "name-asc":
+            return nameA.localeCompare(nameB);
+          case "name-desc":
+            return nameB.localeCompare(nameA);
+          case "state-asc":
+            return stateA.localeCompare(stateB);
+          case "state-desc":
+            return stateB.localeCompare(stateA);
+          default:
+            return scoreB - scoreA;
+        }
       });
-  }, [programs, selectedState, selectedInstitution, cutoffRange, userScore]);
+  }, [programs, selectedState, selectedInstitution, cutoffRange, userScore, searchQuery, sortOption]);
 
   // Get unique institutions
   const institutions = useMemo(() => {
@@ -125,6 +162,15 @@ export default function ResidenciasPage() {
       <div className="relative z-10 w-full transition-all duration-300 pt-0 pl-0 lg:pl-96">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchBar 
+            onSearchChange={setSearchQuery}
+            resultsCount={filteredPrograms.length}
+            totalCount={programs.length}
+          />
+        </div>
+
         {/* Results */}
         <div className="mt-8">
           {loading ? (
@@ -146,6 +192,7 @@ export default function ResidenciasPage() {
                     ? `🎯 Programas onde você passaria (${filteredPrograms.length})`
                     : `📚 Programas de Residência (${filteredPrograms.length})`}
                 </h2>
+                <SortControls value={sortOption} onChange={setSortOption} />
               </div>
 
               {filteredPrograms.length === 0 ? (
@@ -157,13 +204,10 @@ export default function ResidenciasPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
-                  {programs.map((program) => {
+                  {filteredPrograms.map((program) => {
                     const latestScore = program.cutoff_scores.find(s => s.year === 2025)?.score;
                     const isHighlighted = userScore !== null && latestScore !== undefined && userScore >= latestScore;
                     const isDisabled = userScore !== null && latestScore !== undefined && userScore < latestScore;
-                    const isInFilteredList = filteredPrograms.some(p => p.id === program.id);
-                    
-                    if (!isInFilteredList && userScore === null) return null;
                     
                     return (
                       <ResidencyCard 
